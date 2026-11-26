@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards de Inglês</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0e13; --bg2:#12151c; --card:#171b24; --card2:#1d2230; --line:#262c3a;
+    --text:#eef0f5; --muted:#8b93a7; --gold:#e8b86b; --gold2:#f3d39c;
+    --ok:#5fd3a5; --bad:#ff8577; --blue:#7aa8ff;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;min-height:100vh}
+  body{background:
+    radial-gradient(900px 500px at 10% -10%, rgba(232,184,107,.10), transparent 60%),
+    radial-gradient(800px 500px at 110% 10%, rgba(122,168,255,.08), transparent 60%),
+    var(--bg);}
+  button{font-family:inherit;cursor:pointer;border:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+  .brand{display:flex;align-items:baseline;gap:12px;cursor:pointer}
+  .brand h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;letter-spacing:.3px}
+  .brand h1 em{color:var(--gold)}
+  .brand span{color:var(--muted);font-size:13px}
+  .pill{background:var(--card);border:1px solid var(--line);color:var(--text);padding:9px 14px;border-radius:999px;font-size:13px;font-weight:500;transition:.2s}
+  .pill:hover{border-color:var(--gold);color:var(--gold2)}
+  .pill.on{background:rgba(232,184,107,.12);border-color:var(--gold);color:var(--gold2)}
+  .pill.sync{cursor:default;color:var(--muted);border-style:dashed}
+  .pill.sync:hover{border-color:var(--line);color:var(--muted)}
+  #contBtn{border-color:var(--ok);color:var(--ok);padding:12px 18px;font-size:14px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  /* HOME */
+  .hero{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+  .hero h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:30px}
+  .hero p{color:var(--muted);font-size:14px;margin-top:4px}
+  .total{display:flex;align-items:center;gap:14px}
+  .ring{width:64px;height:64px}
+  .ring circle{fill:none;stroke-width:6}
+  .ring .bgc{stroke:var(--line)} .ring .fg{stroke:var(--gold);stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+  .total b{font-size:22px;display:block} .total small{color:var(--muted);font-size:12px}
+  .btn-main{background:linear-gradient(135deg,var(--gold),#d99a45);color:#1a1205;font-weight:700;padding:13px 22px;border-radius:14px;font-size:15px;box-shadow:0 8px 30px rgba(232,184,107,.25);transition:.2s}
+  .btn-main:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(232,184,107,.35)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+  .sec{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:18px;cursor:pointer;transition:.25s;position:relative;overflow:hidden;opacity:0;transform:translateY(10px);animation:in .5s forwards}
+  .sec:hover{border-color:rgba(232,184,107,.6);transform:translateY(-3px)}
+  .sec .ic{font-size:24px;margin-bottom:10px}
+  .sec h3{font-size:15px;font-weight:600;margin-bottom:4px}
+  .sec p{color:var(--muted);font-size:12.5px}
+  .bar{height:5px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:14px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--ok));border-radius:9px;transition:width .6s}
+  .badge{font-size:10px;letter-spacing:1px;text-transform:uppercase;background:rgba(122,168,255,.12);color:var(--blue);border:1px solid rgba(122,168,255,.35);padding:2px 8px;border-radius:999px;margin-left:10px;vertical-align:middle;font-weight:600}
+  .sec .num{position:absolute;top:16px;right:16px;font-size:12px;color:var(--muted)}
+  @keyframes in{to{opacity:1;transform:none}}
+
+  /* STUDY */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .topbar h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:28px}
+  .prog{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-bottom:8px}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--ok));transition:width .4s}
+  .stats{display:flex;justify-content:space-between;color:var(--muted);font-size:12.5px;margin-bottom:22px}
+  .stats .k{color:var(--ok)} .stats .u{color:var(--bad)}
+  .scene{perspective:1400px;max-width:620px;margin:0 auto}
+  .card{position:relative;height:330px;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.8,.2,1);cursor:pointer}
+  .card.flip{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:26px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center}
+  .front{background:linear-gradient(160deg,var(--card2),var(--card))}
+  .back{background:linear-gradient(160deg,#1f2433,#171b25);transform:rotateY(180deg);border-color:rgba(232,184,107,.35)}
+  .face .lab{position:absolute;top:18px;left:22px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  .face .hint{position:absolute;bottom:18px;font-size:12px;color:var(--muted)}
+  .word{font-family:'Instrument Serif',serif;font-size:44px;line-height:1.15;word-break:break-word}
+  .back .word{color:var(--gold2)}
+  .word.small{font-size:30px} .word.xs{font-size:23px;font-family:Inter;font-weight:500;line-height:1.45}
+  .card.enter{animation:pop .45s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:620px;margin:22px auto 0}
+  .act{padding:16px;border-radius:16px;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;border:1px solid}
+  .act.study{background:rgba(255,133,119,.08);color:var(--bad);border-color:rgba(255,133,119,.35)}
+  .act.study:hover{background:rgba(255,133,119,.16)}
+  .act.know{background:rgba(95,211,165,.08);color:var(--ok);border-color:rgba(95,211,165,.35)}
+  .act.know:hover{background:rgba(95,211,165,.16)}
+  .keys{text-align:center;color:var(--muted);font-size:11.5px;margin-top:14px}
+  kbd{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:inherit}
+
+  /* STUDY PANEL */
+  .overlay{position:fixed;inset:0;background:rgba(5,6,10,.7);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;z-index:20;padding:16px}
+  .overlay.show{display:flex;animation:fade .25s}
+  @keyframes fade{from{opacity:0}}
+  .panel{background:var(--bg2);border:1px solid var(--line);border-radius:26px;max-width:640px;width:100%;max-height:88vh;overflow:auto;padding:26px;animation:up .35s cubic-bezier(.2,.8,.2,1)}
+  @keyframes up{from{transform:translateY(40px);opacity:0}}
+  .panel .tag{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold)}
+  .panel h3{font-family:'Instrument Serif',serif;font-weight:400;font-size:34px;margin:6px 0 2px}
+  .panel .ans{color:var(--gold2);font-size:18px;font-weight:500;margin-bottom:18px}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+  .box h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
+  .box p{font-size:14.5px;line-height:1.6}
+  .ex-en{font-size:16px;font-weight:500}
+  .ex-pt{color:var(--muted);font-size:14px;margin-top:4px}
+  .rule{white-space:pre-line}
+  .panel .btn-main{width:100%;margin-top:6px}
+
+  /* END */
+  .end{text-align:center;max-width:520px;margin:30px auto;animation:pop .5s}
+  .end .big{font-size:64px}
+  .end h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:38px;margin:10px 0}
+  .end p{color:var(--muted)}
+  .end .row{justify-content:center;margin-top:24px}
+  .hidden{display:none!important}
+  @media (max-width:560px){
+    .brand h1{font-size:32px}.card{height:300px}.word{font-size:36px}.word.small{font-size:26px}.word.xs{font-size:19px}
+    .act{font-size:14px;padding:14px 8px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand" id="goHome"><h1>English <em>Cards</em></h1><span>suas anotações, em flashcards</span></div>
+    <div class="row">
+      <span class="pill sync" id="syncPill">💾 Salvo neste navegador</span>
+      <button class="pill on" id="dirBtn" title="Trocar a direção">EN → PT</button>
+      <button class="pill" id="shufBtn">🔀 Embaralhar: sim</button>
+      <button class="pill" id="resetBtn">↺ Zerar progresso</button>
+    </div>
+  </header>
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="hero">
+      <div>
+        <h2>Escolha uma parte para estudar</h2>
+        <p>Toque no card para virar. Se não souber, aperte <b style="color:var(--bad)">Estudar</b> e veja a explicação.</p>
+      </div>
+      <div class="row" style="gap:18px">
+        <div class="total">
+          <svg class="ring" viewBox="0 0 64 64"><circle class="bgc" cx="32" cy="32" r="27"/><circle class="fg" id="ringFg" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="169.6" transform="rotate(-90 32 32)"/></svg>
+          <div><b id="totalPct">0%</b><small id="totalTxt">0 de 0 dominados</small></div>
+        </div>
+        <button class="pill hidden" id="contBtn"></button>
+        <button class="btn-main" id="allBtn">Estudar tudo</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- STUDY -->
+  <section id="study" class="hidden">
+    <div class="topbar">
+      <div class="row"><button class="pill" id="backBtn">← Partes</button><h2 id="secTitle"></h2></div>
+    </div>
+    <div class="prog"><i id="progBar"></i></div>
+    <div class="stats"><span id="countTxt"></span><span><span class="k" id="kTxt">✓ 0</span> &nbsp; <span class="u" id="uTxt">📖 0</span></span></div>
+    <div class="scene">
+      <div class="card" id="card">
+        <div class="face front"><span class="lab" id="frontLab">Inglês</span><div class="word" id="frontTxt"></div><span class="hint">toque para virar</span></div>
+        <div class="face back"><span class="lab" id="backLab">Português</span><div class="word" id="backTxt"></div><span class="hint">toque para voltar</span></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="act study" id="studyBtn">📖 Não sei · Estudar</button>
+      <button class="act know" id="knowBtn">✓ Sei</button>
+    </div>
+    <p class="keys"><kbd>Espaço</kbd> virar &nbsp; <kbd>1</kbd> estudar &nbsp; <kbd>2</kbd> sei</p>
+  </section>
+
+  <!-- END -->
+  <section id="end" class="hidden">
+    <div class="end">
+      <div class="big" id="endEmoji">🎉</div>
+      <h2 id="endTitle">Rodada concluída!</h2>
+      <p id="endTxt"></p>
+      <div class="row">
+        <button class="pill" id="endHome">← Voltar às partes</button>
+        <button class="btn-main" id="endAgain">Estudar de novo</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- STUDY PANEL -->
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <span class="tag" id="pSec"></span>
+    <h3 id="pFront"></h3>
+    <div class="ans" id="pBack"></div>
+    <div class="box" id="pTipBox"><h4>💡 Explicação</h4><p id="pTip"></p></div>
+    <div class="box" id="pExBox"><h4>🗣️ Exemplo</h4><p class="ex-en" id="pExEn"></p><p class="ex-pt" id="pExPt"></p></div>
+    <div class="box"><h4>📚 Regra da parte</h4><p class="rule" id="pRule"></p></div>
+    <p style="color:var(--muted);font-size:12.5px;margin:4px 2px 12px">Esse card vai voltar daqui a pouco nesta rodada para você revisar.</p>
+    <button class="btn-main" id="pNext">Entendi · Próximo card</button>
+  </div>
+</div>
+
+<script>
+/* ===== CONTEÚDO =====  card: [frente (inglês), verso (português), explicação, exemplo EN, exemplo PT] */
+const SECTIONS = [
+{id:"juntas",ic:"🔗",title:"Palavras juntas x separadas",desc:"maybe, already, everyday...",
+rule:"Separadas: cada palavra mantém seu sentido próprio.\nJuntas: viram UMA palavra nova, com outro sentido.\nDica: se der para colocar outra palavra no meio, provavelmente é separado.",
+cards:[
+["May be","Pode ser","Verbo 'may' (pode) + 'be' (ser). Funciona como verbo na frase.","It may be true.","Pode ser verdade."],
+["Maybe","Talvez","Advérbio, uma palavra só. Normalmente vem no começo da frase.","Maybe I'll go tomorrow.","Talvez eu vá amanhã."],
+["A part","Uma parte","Artigo 'a' + substantivo 'part'.","I want to be a part of the team.","Eu quero ser uma parte do time."],
+["Apart","Separado / à parte","Uma palavra só: indica distância ou separação.","They live apart now.","Eles moram separados agora."],
+["All ready","Tudo / todos prontos","'All' (todos) + 'ready' (prontos).","We are all ready to go.","Estamos todos prontos para ir."],
+["Already","Já","Advérbio de tempo: algo que já aconteceu.","I already ate.","Eu já comi."],
+["Some time","Algum tempo","Uma quantidade de tempo.","I need some time to think.","Eu preciso de algum tempo para pensar."],
+["Sometime","Em algum momento","Um momento indefinido (geralmente no futuro).","Let's have coffee sometime.","Vamos tomar um café em algum momento."],
+["Every thing","Cada coisa","Cada item individualmente. Bem menos comum.","Every thing in this box is new.","Cada coisa nessa caixa é nova."],
+["Everything","Tudo","Pronome: tudo, a totalidade.","Everything is fine.","Está tudo bem."],
+["Over time","Com o tempo","Expressão: ao longo do tempo.","You'll get better over time.","Você vai melhorar com o tempo."],
+["Overtime","Horas extras","Substantivo: trabalho além do horário.","I worked overtime yesterday.","Eu fiz hora extra ontem."],
+["Every day","Todos os dias","Expressão de frequência (vem no fim da frase).","I study English every day.","Eu estudo inglês todos os dias."],
+["Everyday","Do dia a dia / cotidiano","Adjetivo: vem antes de um substantivo.","These are everyday words.","Essas são palavras do dia a dia."],
+["Almost all","Quase tudo / quase todos","'All most' quase não se usa. Para dizer 'quase tudo' o certo é 'almost all' ou 'almost everything'.","Almost all my friends came.","Quase todos os meus amigos vieram."],
+["Almost","Quase","Advérbio: por pouco, perto de.","I'm almost there.","Estou quase chegando."],
+["Make up","Inventar (algo)","Phrasal verb (verbo): inventar uma história/desculpa. Também 'fazer as pazes'.","He made up an excuse.","Ele inventou uma desculpa."],
+["Makeup","Maquiagem","Substantivo, uma palavra só.","She doesn't wear makeup.","Ela não usa maquiagem."],
+["All together","Todos juntos","Todos ao mesmo tempo / no mesmo lugar.","Let's sing all together.","Vamos cantar todos juntos."],
+["Altogether","Completamente / no total","Advérbio: totalmente, ou somando tudo.","That's $50 altogether.","São 50 dólares no total."],
+["Every one","Cada um / cada pessoa","Cada indivíduo de um grupo (geralmente com 'of').","Every one of them passed.","Cada um deles passou."],
+["Everyone","Todo mundo","Pronome: todas as pessoas.","Everyone is here.","Todo mundo está aqui."],
+["Any time","Em qualquer momento","Separado, geralmente com 'at'.","You can call me at any time.","Você pode me ligar em qualquer momento."],
+["Anytime","A qualquer hora / Disponha","Advérbio. Também é resposta a 'thanks' = 'disponha'.","Thanks! — Anytime!","Obrigado! — Disponha!"]
+]},
+{id:"irregulares",ic:"🔁",title:"Verbos irregulares",desc:"as 3 formas: presente – passado – particípio",
+rule:"Verbo irregular não ganha -ed no passado.\nForma 1 (presente) – Forma 2 (passado simples) – Forma 3 (particípio, usado com have/has).\nEx.: I go / I went / I have gone.",
+cards:[
+["be","was/were – been · ser/estar","I/he/she/it → was · you/we/they → were.","I was tired yesterday.","Eu estava cansado ontem."],
+["do","did – done · fazer","'did' também é o auxiliar do passado em perguntas e negativas.","I did my homework.","Eu fiz minha lição de casa."],
+["go","went – gone · ir","'went' não parece nada com 'go': precisa decorar.","We went to the beach.","Nós fomos à praia."],
+["make","made – made · fazer / criar","Make = fazer no sentido de criar/produzir.","She made a cake.","Ela fez um bolo."],
+["think","thought – thought · pensar / achar","Pronúncia: 'thót'.","I thought you were busy.","Eu achei que você estava ocupado."],
+["see","saw – seen · ver","","I saw a movie last night.","Eu vi um filme ontem à noite."],
+["give","gave – given · dar","","He gave me a gift.","Ele me deu um presente."],
+["tell","told – told · contar / dizer (a alguém)","Tell sempre tem uma pessoa: tell ME, tell HER.","She told me the truth.","Ela me contou a verdade."],
+["leave","left – left · sair / deixar","","I left my phone at home.","Eu deixei meu celular em casa."],
+["bring","brought – brought · trazer","Pronúncia: 'brót'.","He brought some food.","Ele trouxe comida."],
+["have","had – had · ter","","I had a dog when I was a kid.","Eu tinha um cachorro quando era criança."],
+["say","said – said · dizer","Pronúncia de said: 'séd'.","She said hello.","Ela disse oi."],
+["get","got – gotten · conseguir / pegar / receber","No inglês britânico o particípio é 'got'; no americano, 'gotten'.","I got a new job.","Eu consegui um emprego novo."],
+["know","knew – known · saber / conhecer","O 'k' é mudo: 'nôu', 'niú'.","I knew the answer.","Eu sabia a resposta."],
+["take","took – taken · pegar / levar","","I took the bus.","Eu peguei o ônibus."],
+["come","came – come · vir","Particípio igual ao presente: come.","They came to my house.","Eles vieram à minha casa."],
+["find","found – found · encontrar / achar","","I found my keys.","Eu encontrei minhas chaves."],
+["feel","felt – felt · sentir","","I felt happy.","Eu me senti feliz."],
+["put","put – put · colocar","As 3 formas são iguais!","I put the book on the table.","Eu coloquei o livro na mesa."],
+["buy","bought – bought · comprar","Pronúncia: 'bót'.","I bought new shoes.","Eu comprei sapatos novos."]
+]},
+{id:"prespast",ic:"⏪",title:"Presente → Passado",desc:"I can / I could, I go / I went...",
+rule:"No passado simples, o verbo fica igual para todas as pessoas (exceto 'be': was/were).\nPresente: I go · Passado: I went.",
+cards:[
+["I can","I could · eu posso → eu podia/pude","'Could' também serve para pedir algo educadamente: Could you help me?","I could swim when I was five.","Eu sabia nadar quando tinha cinco anos."],
+["I go","I went · eu vou → eu fui","","I went to work early.","Eu fui trabalhar cedo."],
+["I have","I had · eu tenho → eu tinha/tive","","I had a great day.","Eu tive um ótimo dia."],
+["I say","I said · eu digo → eu disse","","I said no.","Eu disse não."],
+["I grow","I grew · eu cresço → eu cresci","Também: cultivar (plantas).","I grew up in Brazil.","Eu cresci no Brasil."],
+["I buy","I bought · eu compro → eu comprei","","I bought a car.","Eu comprei um carro."],
+["I sell","I sold · eu vendo → eu vendi","","I sold my old phone.","Eu vendi meu celular antigo."],
+["I am","I was · eu sou/estou → eu era/estava","","I was at home.","Eu estava em casa."],
+["I do","I did · eu faço → eu fiz","","I did it!","Eu consegui! / Eu fiz!"],
+["I tell","I told · eu conto → eu contei","","I told him everything.","Eu contei tudo para ele."],
+["I drive","I drove · eu dirijo → eu dirigi","","I drove for three hours.","Eu dirigi por três horas."]
+]},
+{id:"basico",ic:"🧱",title:"O básico que precisa ter",desc:"I have / I had, I do / I did...",
+rule:"Esses são os verbos mais usados do inglês. Sabendo o presente e o passado deles, você já monta a maioria das frases do dia a dia.",
+cards:[
+["I have","Eu tenho","","I have two brothers.","Eu tenho dois irmãos."],
+["I had","Eu tinha / tive","Passado de have.","I had lunch at noon.","Eu almocei ao meio-dia."],
+["I do","Eu faço","","I do it every morning.","Eu faço isso toda manhã."],
+["I did","Eu fiz","Passado de do.","I did my best.","Eu fiz o meu melhor."],
+["I go","Eu vou","","I go to the gym.","Eu vou à academia."],
+["I went","Eu fui","Passado de go.","I went home.","Eu fui para casa."],
+["I see","Eu vejo","","I see you.","Eu vejo você."],
+["I saw","Eu vi","Passado de see.","I saw her yesterday.","Eu a vi ontem."],
+["I say","Eu digo","","I say it all the time.","Eu digo isso o tempo todo."],
+["I said","Eu disse","Passado de say.","I said I was sorry.","Eu disse que sentia muito."],
+["I take","Eu pego / levo","","I take the subway.","Eu pego o metrô."],
+["I took","Eu peguei / levei","Passado de take.","I took a picture.","Eu tirei uma foto."],
+["I come","Eu venho","","I come here every week.","Eu venho aqui toda semana."],
+["I came","Eu vim","Passado de come.","I came by car.","Eu vim de carro."],
+["I make","Eu faço / crio","","I make my own coffee.","Eu faço meu próprio café."],
+["I made","Eu fiz / criei","Passado de make.","I made a mistake.","Eu cometi um erro."],
+["I know","Eu sei / conheço","","I know that guy.","Eu conheço aquele cara."],
+["I knew","Eu sabia / conhecia","Passado de know.","I knew it!","Eu sabia!"],
+["I think","Eu penso / acho","","I think it's a good idea.","Eu acho que é uma boa ideia."],
+["I thought","Eu pensei / achei","Passado de think.","I thought so.","Foi o que eu pensei."],
+["I get","Eu recebo / pego / entendo","'Get' tem muitos sentidos; o contexto decide.","I get it.","Eu entendo."],
+["I got","Eu recebi / peguei / entendi","Passado de get.","I got your message.","Eu recebi sua mensagem."],
+["I give","Eu dou","","I give money to charity.","Eu doo dinheiro para caridade."],
+["I gave","Eu dei","Passado de give.","I gave her flowers.","Eu dei flores para ela."],
+["I find","Eu encontro / acho","","I find it interesting.","Eu acho isso interessante."],
+["I found","Eu encontrei / achei","Passado de find.","I found a solution.","Eu encontrei uma solução."],
+["I feel","Eu sinto","","I feel good today.","Eu me sinto bem hoje."],
+["I felt","Eu senti","Passado de feel.","I felt sick.","Eu me senti mal."],
+["I leave","Eu saio / deixo","","I leave work at six.","Eu saio do trabalho às seis."],
+["I left","Eu saí / deixei","Passado de leave.","I left early.","Eu saí cedo."],
+["I put (presente)","Eu coloco","Put é igual no presente e no passado.","I put sugar in my coffee.","Eu coloco açúcar no meu café."],
+["I put (passado)","Eu coloquei","Mesma forma do presente: o contexto mostra o tempo.","I put it there yesterday.","Eu coloquei ali ontem."],
+["I bring","Eu trago","","I bring my lunch.","Eu trago meu almoço."],
+["I brought","Eu trouxe","Passado de bring.","I brought you something.","Eu trouxe uma coisa para você."],
+["I hear","Eu ouço","","I hear music.","Eu ouço música."],
+["I heard","Eu ouvi","Passado de hear. Pronúncia: 'hérd'.","I heard a noise.","Eu ouvi um barulho."],
+["I run","Eu corro","","I run every morning.","Eu corro toda manhã."],
+["I ran","Eu corri","Passado de run.","I ran 5 km.","Eu corri 5 km."],
+["I write","Eu escrevo","O 'w' é mudo: 'ráit'.","I write code.","Eu escrevo código."],
+["I wrote","Eu escrevi","Passado de write.","I wrote a letter.","Eu escrevi uma carta."]
+]},
+{id:"conjug",ic:"🧩",title:"Be, Do e Have (conjugação)",desc:"I am, he is, she does, it has...",
+rule:"BE: I am · you are · he/she/it is · we are · they are\nDO: I do · you do · he/she/it does · we do · they do\nHAVE: I have · you have · he/she/it has · we have · they have\nRegra: com he/she/it o verbo muda (is, does, has).",
+cards:[
+["BE no presente (todas as pessoas)","I am · you are · he/she/it is · we are · they are","'Be' é o verbo ser/estar.","They are my friends.","Eles são meus amigos."],
+["DO no presente (todas as pessoas)","I do · you do · he/she/it does · we do · they do","Só muda com he/she/it: does.","He does yoga.","Ele faz ioga."],
+["HAVE no presente (todas as pessoas)","I have · you have · he/she/it has · we have · they have","Só muda com he/she/it: has.","She has a cat.","Ela tem um gato."],
+["She ___ a doctor. (be)","She is a doctor.","he/she/it → is","She is a doctor.","Ela é médica."],
+["We ___ happy. (be)","We are happy.","we/you/they → are","We are happy.","Nós estamos felizes."],
+["He ___ his homework. (do)","He does his homework.","he/she/it → does","He does his homework.","Ele faz a lição de casa."],
+["They ___ a big house. (have)","They have a big house.","they → have","They have a big house.","Eles têm uma casa grande."],
+["It ___ four legs. (have)","It has four legs.","it → has","It has four legs.","Ele (o animal) tem quatro patas."],
+["I ___ ready. (be)","I am ready.","I → am","I am ready.","Eu estou pronto."]
+]},
+{id:"sentimentos",ic:"❤️",title:"Verbos: sentimentos e ações",desc:"enjoy, love, worry, shout...",
+rule:"Depois de enjoy, love, hate, imagine, suggest e fear, é comum usar o verbo com -ing:\nI enjoy reading · I hate waiting.",
+cards:[
+["enjoy","Aproveitar / curtir","Enjoy + verbo-ing.","I enjoy reading.","Eu curto ler."],
+["love","Amar","","I love this song.","Eu amo essa música."],
+["hate","Odiar","","I hate waiting.","Eu odeio esperar."],
+["fear","Temer","Mais formal; no dia a dia usa-se 'be afraid of'.","Many people fear change.","Muitas pessoas temem mudança."],
+["worry","Se preocupar","Worry about = se preocupar com.","Don't worry about it.","Não se preocupe com isso."],
+["imagine","Imaginar","","Imagine living in London.","Imagine morar em Londres."],
+["suggest","Sugerir","","I suggest taking a break.","Eu sugiro fazer uma pausa."],
+["refuse","Recusar","Refuse + to + verbo.","He refused to help.","Ele se recusou a ajudar."],
+["cry","Chorar","Passado: cried.","The baby is crying.","O bebê está chorando."],
+["shout","Gritar","Gritar de raiva ou para ser ouvido.","Don't shout at me.","Não grite comigo."],
+["whisper","Sussurrar","","She whispered a secret.","Ela sussurrou um segredo."],
+["scream","Gritar (de susto)","Grito agudo de medo/susto/emoção.","I screamed when I saw the spider.","Eu gritei quando vi a aranha."],
+["sing","Cantar","Irregular: sang – sung.","She sings very well.","Ela canta muito bem."],
+["dance","Dançar","","Let's dance!","Vamos dançar!"],
+["paint","Pintar","Com tinta.","I painted my room.","Eu pintei meu quarto."],
+["draw","Desenhar","Irregular: drew – drawn.","Can you draw a cat?","Você consegue desenhar um gato?"],
+["smell","Cheirar","Também: ter cheiro de. It smells good = está cheiroso.","This smells good.","Isso está com um cheiro bom."],
+["touch","Tocar","Tocar com a mão (tocar instrumento é 'play').","Don't touch that.","Não toque nisso."],
+["hug","Abraçar","","Come here, give me a hug.","Vem cá, me dá um abraço."],
+["kiss","Beijar","","He kissed her.","Ele a beijou."],
+["wave","Acenar","","She waved goodbye.","Ela acenou tchau."],
+["point","Apontar","Point at = apontar para.","Don't point at people.","Não aponte para as pessoas."]
+]},
+{id:"dinheiro",ic:"💰",title:"Verbos: dinheiro e aprendizado",desc:"owe, earn, afford, learn...",
+rule:"Afford quase sempre aparece com can/can't: I can't afford it = não tenho grana pra isso.\nListen to = escutar algo (sempre com 'to').",
+cards:[
+["travel","Viajar","","I want to travel to Japan.","Eu quero viajar para o Japão."],
+["learn","Aprender","","I'm learning English.","Eu estou aprendendo inglês."],
+["practice","Praticar","","Practice every day.","Pratique todo dia."],
+["listen","Escutar","Sempre 'listen TO' + algo.","I listen to podcasts.","Eu escuto podcasts."],
+["speak","Falar","Irregular: spoke – spoken. Speak + idioma.","Do you speak English?","Você fala inglês?"],
+["owe","Dever (dinheiro)","","I owe you 20 dollars.","Eu te devo 20 dólares."],
+["earn","Ganhar (dinheiro)","Ganhar por trabalho. Ganhar um jogo é 'win'.","He earns a good salary.","Ele ganha um bom salário."],
+["invest","Investir","","I want to invest in stocks.","Eu quero investir em ações."],
+["afford","Ter grana para pagar","Geralmente com can/can't.","I can't afford a new car.","Eu não tenho grana para um carro novo."],
+["waste","Desperdiçar","","Don't waste time.","Não desperdice tempo."]
+]},
+{id:"casa",ic:"🏠",title:"Verbos: casa e cozinha",desc:"cook, pour, wash, borrow, lend...",
+rule:"Borrow = pegar emprestado (você recebe).\nLend = emprestar (você dá).\nCan I borrow your pen? = Can you lend me your pen?",
+cards:[
+["cook","Cozinhar","'Cook' também é o substantivo 'cozinheiro'.","I cook dinner every night.","Eu cozinho o jantar toda noite."],
+["bake","Assar","Assar no forno (bolo, pão).","She baked a cake.","Ela assou um bolo."],
+["fill","Encher","","Fill the glass with water.","Encha o copo com água."],
+["empty","Esvaziar","Também é adjetivo: vazio.","Empty the trash, please.","Esvazie o lixo, por favor."],
+["pour","Servir (despejar líquido)","","Can you pour me some wine?","Pode me servir um pouco de vinho?"],
+["mix","Misturar","","Mix the flour and the eggs.","Misture a farinha e os ovos."],
+["stir","Mexer","Mexer com colher.","Stir the soup.","Mexa a sopa."],
+["taste","Provar (comida)","Também: ter gosto de.","Taste this!","Prova isso!"],
+["clean","Limpar","","I cleaned the kitchen.","Eu limpei a cozinha."],
+["wash","Lavar","","Wash your hands.","Lave as mãos."],
+["iron","Passar (roupa)","Pronúncia: 'áiern'. Também significa ferro.","I need to iron my shirt.","Eu preciso passar minha camisa."],
+["fold","Dobrar","","Fold the clothes.","Dobre as roupas."],
+["hang","Pendurar","Irregular: hung – hung.","Hang your coat here.","Pendure seu casaco aqui."],
+["pack","Fazer as malas","","I need to pack for the trip.","Eu preciso fazer as malas para a viagem."],
+["unpack","Desfazer as malas","O prefixo 'un-' indica o contrário.","I haven't unpacked yet.","Eu ainda não desfiz as malas."],
+["share","Compartilhar","","Let's share a pizza.","Vamos dividir uma pizza."],
+["borrow","Pegar emprestado","Você RECEBE algo.","Can I borrow your pen?","Posso pegar sua caneta emprestada?"],
+["lend","Emprestar","Você DÁ algo. Irregular: lent – lent.","Can you lend me 10 dollars?","Você pode me emprestar 10 dólares?"]
+]},
+{id:"frases",ic:"💬",title:"Frases do dia a dia",desc:"I'm down, no way, you got this...",
+rule:"Expressões prontas: decore a frase inteira, não palavra por palavra.",
+cards:[
+["I'm down","Eu topo","Resposta a um convite.","Pizza tonight? — I'm down!","Pizza hoje? — Eu topo!"],
+["Take your time","Sem pressa","","Take your time, no rush.","Sem pressa, com calma."],
+["You got this","Você consegue","Para encorajar alguém.","Don't worry, you got this!","Relaxa, você consegue!"],
+["I'm running late","Estou atrasado","Literalmente 'estou correndo atrasado'.","Sorry, I'm running late.","Desculpa, estou atrasado."],
+["I gotta go","Eu tenho que ir","Gotta = got to.","It's late, I gotta go.","Está tarde, eu tenho que ir."],
+["I don't know","Eu não sei","","I don't know where he is.","Eu não sei onde ele está."],
+["No way","De jeito nenhum / Não acredito","Pode ser recusa ou surpresa.","No way! Really?","Não acredito! Sério?"],
+["You're kidding me","Você tá de brincadeira","","You won the lottery? You're kidding me!","Você ganhou na loteria? Tá de brincadeira!"],
+["Easy peasy","Muito fácil","Informal, meio brincalhão.","The test was easy peasy.","A prova foi moleza."]
+]},
+{id:"comida",ic:"🍽️",title:"Pedir comida",desc:"Can I have..., I'll have..., I'd like...",
+rule:"Can I have ... please? = Pode me trazer ... por favor?\nI'll have ... = Vou querer ...\nI'd like ... = Eu gostaria de ...",
+cards:[
+["Can I have ..., please?","Pode me trazer ..., por favor?","Pedido educado e muito comum.","Can I have the bill, please?","Pode me trazer a conta, por favor?"],
+["I'll have ...","Vou querer ...","I'll = I will. Usado ao fazer o pedido.","I'll have a large coffee.","Vou querer um café grande."],
+["I'd like ...","Eu gostaria de ...","I'd = I would. O mais educado dos três.","I'd like some juice.","Eu gostaria de um pouco de suco."],
+["Pode me trazer a conta, por favor?","Can I have the bill, please?","Bill (britânico) ou check (americano).","Can I have the check, please?","A conta, por favor?"],
+["Vou querer um café grande.","I'll have a large coffee.","","I'll have a large coffee.","Vou querer um café grande."],
+["Eu gostaria de um pouco de suco.","I'd like some juice.","","I'd like some juice.","Eu gostaria de um pouco de suco."]
+]},
+{id:"conectivos",ic:"🪢",title:"Conectivos",desc:"but, so, however, while...",
+rule:"Conectivos ligam ideias.\nContraste: but, although/though, however\nCausa: because, since\nConsequência: so, therefore\nTempo: while, then\nAdição: besides",
+cards:[
+["but","Mas","","I like it, but it's expensive.","Eu gosto, mas é caro."],
+["because","Porque (resposta)","Usado para responder 'why?'.","I'm tired because I worked a lot.","Estou cansado porque trabalhei muito."],
+["so","Então / por isso","","It was raining, so I stayed home.","Estava chovendo, então fiquei em casa."],
+["although / though","Embora","'Though' no fim da frase = 'mesmo assim'.","Although it was cold, we went out.","Embora estivesse frio, nós saímos."],
+["however","Porém / entretanto","Mais formal; geralmente com vírgula.","It's good. However, it's expensive.","É bom. Porém, é caro."],
+["therefore","Portanto","Formal.","I think, therefore I am.","Penso, logo existo."],
+["while","Enquanto","","I listen to music while I work.","Eu escuto música enquanto trabalho."],
+["besides","Além disso","","Besides, it's too late.","Além disso, já é tarde demais."],
+["since","Desde / já que","Desde (tempo) ou já que (causa).","I've lived here since 2020.","Eu moro aqui desde 2020."],
+["then","Então / depois","Sequência de ações.","First eat, then study.","Primeiro coma, depois estude."]
+]},
+{id:"perguntas",ic:"❓",title:"Palavras de pergunta",desc:"why, how, who, when, where, what",
+rule:"Why = por que (pergunta) → Because = porque (resposta).\nPerguntas com 'wh-' + auxiliar (do/does/did/is/are) + sujeito.",
+cards:[
+["why","Por que (pergunta)","Responde-se com 'because'.","Why are you sad?","Por que você está triste?"],
+["how","Como","","How are you?","Como você está?"],
+["who","Quem","","Who is she?","Quem é ela?"],
+["when","Quando","","When is your birthday?","Quando é seu aniversário?"],
+["where","Onde","","Where do you live?","Onde você mora?"],
+["what","O que / qual","","What is your name?","Qual é o seu nome?"],
+["Why × Because","Why = pergunta · Because = resposta","Em português os dois são 'porque/por que'; em inglês são palavras diferentes.","Why? — Because I said so.","Por quê? — Porque eu disse."]
+]},
+{id:"preposicoes",ic:"📍",title:"Preposições",desc:"of, from, for, with, without, about",
+rule:"Preposições ligam palavras e mostram relação (origem, companhia, assunto...).",
+cards:[
+["of","De","Posse ou parte de algo.","A cup of coffee.","Uma xícara de café."],
+["from","De / desde","Origem ou ponto de partida.","I'm from Brazil.","Eu sou do Brasil."],
+["for","Para / por","","This is for you.","Isso é para você."],
+["with","Com","","I live with my family.","Eu moro com minha família."],
+["without","Sem","","Coffee without sugar.","Café sem açúcar."],
+["about","Sobre","","Let's talk about it.","Vamos falar sobre isso."]
+]},
+{id:"contracoes",ic:"✂️",title:"Abreviações (contrações)",desc:"I'm, I'll, gonna, wanna...",
+rule:"Contrações deixam a fala natural.\nI'm, I'll, I've, I'd: podem ser escritas em qualquer contexto.\nWanna, gonna, gotta, kinda: informais (fala e mensagens).",
+cards:[
+["I am","I'm","","I'm hungry.","Estou com fome."],
+["I will","I'll","","I'll call you later.","Eu te ligo mais tarde."],
+["I have","I've","Comum no present perfect.","I've been there.","Eu já estive lá."],
+["I would","I'd","","I'd love to.","Eu adoraria."],
+["want to","wanna","Informal.","I wanna go home.","Eu quero ir para casa."],
+["going to","gonna","Informal. Futuro.","I'm gonna study tonight.","Eu vou estudar hoje à noite."],
+["got to","gotta","Informal: ter que.","I gotta work tomorrow.","Eu tenho que trabalhar amanhã."],
+["kind of","kinda","Informal: meio que / tipo.","I'm kinda tired.","Estou meio cansado."]
+]},
+{id:"everysome",ic:"🌐",title:"Every / Some / Any / No",desc:"everybody, something, nowhere...",
+rule:"every = todos · some = alguns · any = qualquer · no = nenhum\n+ body = pessoa · + thing = coisa · + where = lugar\nEx.: some + thing = something (alguma coisa).\nDica: 'any' é usado em perguntas e negativas: I don't have anything.",
+cards:[
+["everybody","Todos / todo mundo","every + body (pessoa)","Everybody loves pizza.","Todo mundo ama pizza."],
+["somebody","Alguém","some + body","Somebody called you.","Alguém te ligou."],
+["anybody","Qualquer um / alguém (pergunta)","any + body","Is anybody here?","Tem alguém aqui?"],
+["nobody","Ninguém","no + body","Nobody knows.","Ninguém sabe."],
+["everything","Tudo","every + thing (coisa)","Everything is ready.","Tudo está pronto."],
+["something","Alguma coisa","some + thing","I want something to eat.","Eu quero alguma coisa para comer."],
+["anything","Qualquer coisa / nada (negativa)","any + thing","I don't need anything.","Eu não preciso de nada."],
+["nothing","Nada","no + thing","Nothing happened.","Nada aconteceu."],
+["everywhere","Em toda parte","every + where (lugar)","I looked everywhere.","Eu procurei em toda parte."],
+["somewhere","Algum lugar","some + where","Let's go somewhere.","Vamos a algum lugar."],
+["anywhere","Qualquer lugar","any + where","Sit anywhere.","Sente em qualquer lugar."],
+["nowhere","Nenhum lugar","no + where","I have nowhere to go.","Não tenho nenhum lugar para ir."]
+]},
+{id:"habitos",ic:"🎯",title:"Hábitos de fala",desc:"though, about to, I feel like, to × for",
+rule:"Hábitos para soar natural:\n• ...though (fim da frase) = mas / só que / mesmo assim\n• about to = prestes a\n• I feel like + verbo-ing = tô com vontade de\n• I gotta = eu tenho que\n• to + verbo (objetivo) · for + pessoa/coisa (pra quem / pra quê)",
+cards:[
+["..., though (no fim da frase)","Mas / só que / porém / mesmo assim","Usado no fim da frase, depois de vírgula.","It's expensive. I like it, though.","É caro. Mas eu gosto mesmo assim."],
+["about to ...","Prestes a ...","be + about to + verbo.","I'm about to leave.","Estou prestes a sair."],
+["I feel like ...","Tô com vontade de ...","I feel like + verbo com -ing.","I feel like eating pizza.","Tô com vontade de comer pizza."],
+["I gotta ...","Eu tenho que ...","Gotta = got to.","I gotta study.","Eu tenho que estudar."],
+["to (= pra)","Antes de VERBO · mostra o objetivo","to + verbo","I came here to learn.","Eu vim aqui pra aprender."],
+["for (= pra)","Antes de PESSOA ou COISA · pra quem / pra quê","for + pessoa ou coisa","This gift is for you.","Esse presente é pra você."]
+]},
+{id:"modais",ic:"🎛️",title:"Modais",desc:"can, could, will, would, must, should, may, might",
+rule:"Modais vêm antes do verbo sem 'to' e não mudam com he/she/it.\nHe can swim (e não 'he cans' ou 'can to swim').",
+cards:[
+["can","Poder / conseguir (habilidade, permissão)","","I can speak English.","Eu sei falar inglês."],
+["could","Podia / poderia (passado ou pedido educado)","","Could you help me?","Você poderia me ajudar?"],
+["will","Vou / irá (futuro)","","I will call you.","Eu vou te ligar."],
+["would","-ria (condicional)","I would go = eu iria.","I would love that.","Eu adoraria isso."],
+["must","Dever / ter que (obrigação forte)","","You must wear a seatbelt.","Você deve usar cinto."],
+["should","Deveria (conselho)","","You should rest.","Você deveria descansar."],
+["may","Pode (possibilidade / permissão formal)","","May I come in?","Posso entrar?"],
+["might","Talvez / pode ser que (possibilidade menor)","","It might rain.","Pode ser que chova."]
+]},
+{id:"negativas",ic:"🚫",title:"Frases negativas",desc:"don't, doesn't, didn't, won't",
+rule:"Presente: don't (I/you/we/they) · doesn't (he/she/it)\nPassado: didn't (todos) — o verbo volta pra forma base: I didn't go\nFuturo: won't = will not",
+cards:[
+["don't","Não (presente)","do not. Com I/you/we/they.","I don't like coffee.","Eu não gosto de café."],
+["doesn't","Não (presente, he/she/it)","does not.","She doesn't eat meat.","Ela não come carne."],
+["didn't","Não (passado)","did not. O verbo volta à forma base: didn't go (não 'didn't went').","I didn't go to work.","Eu não fui trabalhar."],
+["won't","Não vou / não irá (futuro)","will not.","I won't tell anyone.","Eu não vou contar para ninguém."],
+["Eu não fui à festa.","I didn't go to the party.","Depois de didn't, use o verbo base.","I didn't go to the party.","Eu não fui à festa."]
+]},
+{id:"tempos",ic:"🕰️",title:"Simple present, past e future",desc:"I work, I worked, I will work",
+rule:"Simple present: I work / he works (rotina)\nSimple past: I worked (terminou)\nSimple future: I will work / I'm going to work",
+cards:[
+["Eu trabalho.","I work.","Simple present: hábitos e rotina.","I work from home.","Eu trabalho de casa."],
+["Ele trabalha.","He works.","Com he/she/it, adiciona -s.","He works at a bank.","Ele trabalha num banco."],
+["Eu trabalhei.","I worked.","Simple past: verbos regulares ganham -ed.","I worked all day.","Eu trabalhei o dia todo."],
+["Eu vou trabalhar.","I will work. / I'm going to work.","Simple future: will (decisão/promessa) ou going to (plano).","I'm going to work tomorrow.","Eu vou trabalhar amanhã."],
+["Você trabalha?","Do you work?","Pergunta no presente: do/does no início.","Do you work on weekends?","Você trabalha nos fins de semana?"],
+["Você trabalhou?","Did you work?","Pergunta no passado: did + verbo base.","Did you work yesterday?","Você trabalhou ontem?"],
+["Você vai trabalhar?","Will you work?","Pergunta no futuro: will no início.","Will you work on Sunday?","Você vai trabalhar no domingo?"]
+]},
+{id:"possessivos",ic:"🔑",title:"Possessivos",desc:"my/mine, your/yours, his, her/hers...",
+rule:"Antes do substantivo: my, your, his, her, its, our, their (my car)\nSozinho (substituindo): mine, yours, his, hers, ours, theirs (it's mine)",
+cards:[
+["my / mine","Meu, minha","my + coisa · mine sozinho","This is my car. It's mine.","Esse é meu carro. É meu."],
+["your / yours","Seu, sua (de você)","","Is this your bag? Is it yours?","Essa é sua bolsa? É sua?"],
+["his","Dele","Igual nas duas formas.","That's his phone. It's his.","Esse é o celular dele. É dele."],
+["her / hers","Dela","","Her name is Ana. The book is hers.","O nome dela é Ana. O livro é dela."],
+["its","Dele/dela (coisa ou animal)","Sem apóstrofo! It's = it is.","The dog wagged its tail.","O cachorro abanou o rabo."],
+["our / ours","Nosso, nossa","","Our house is big. It's ours.","Nossa casa é grande. É nossa."],
+["their / theirs","Deles, delas","","Their kids are cute. The car is theirs.","Os filhos deles são fofos. O carro é deles."]
+]},
+{id:"hipoteticas",ic:"💭",title:"Frases hipotéticas",desc:"If I could, I would...",
+rule:"Para imaginar situações:\nIf + passado, ... would + verbo\nIf I could, I would... · If I were, I would... · If I had, I would...\nCom 'be', use 'were' para todas as pessoas: If I were you.",
+cards:[
+["If I could, I would ...","Se eu pudesse, eu ...","Situação imaginária.","If I could, I would travel the world.","Se eu pudesse, eu viajaria pelo mundo."],
+["If I were ..., I would ...","Se eu fosse/estivesse ..., eu ...","Use 'were' mesmo com I/he/she.","If I were you, I would accept.","Se eu fosse você, eu aceitaria."],
+["If I had ..., I would ...","Se eu tivesse ..., eu ...","","If I had money, I would buy a house.","Se eu tivesse dinheiro, compraria uma casa."],
+["Se eu fosse rico, eu viajaria.","If I were rich, I would travel.","","If I were rich, I would travel.","Se eu fosse rico, eu viajaria."]
+]},
+{id:"continuos",ic:"⏳",title:"Tempos contínuos e perfeitos",desc:"I'm working, I have worked...",
+rule:"Contínuos: be + verbo-ing (ação em andamento)\n• I am working / I was working / I will be working\nPerfeitos: have + particípio (ligação com outro momento)\n• I have worked / I had worked / I will have worked",
+cards:[
+["I am working.","Eu estou trabalhando.","Present continuous: acontecendo agora.","I am working right now.","Eu estou trabalhando agora."],
+["I was working.","Eu estava trabalhando.","Past continuous: em andamento no passado.","I was working when you called.","Eu estava trabalhando quando você ligou."],
+["I will be working.","Eu estarei trabalhando.","Future continuous: em andamento no futuro.","At 9 I will be working.","Às 9 eu estarei trabalhando."],
+["I have worked.","Eu (já) trabalhei / tenho trabalhado.","Present perfect: passado ligado ao presente.","I have worked here for two years.","Eu trabalho aqui há dois anos."],
+["I had worked.","Eu tinha trabalhado.","Past perfect: antes de outro momento no passado.","I had worked before I studied.","Eu tinha trabalhado antes de estudar."],
+["I will have worked.","Eu terei trabalhado.","Future perfect: concluído até um momento futuro.","By Friday I will have finished.","Até sexta eu terei terminado."],
+["I have been working.","Eu tenho trabalhado / estou trabalhando há...","Present perfect continuous: começou no passado e continua.","I have been studying for an hour.","Eu estou estudando há uma hora."],
+["Você já foi a Londres?","Have you ever been to London?","Present perfect com 'ever' = alguma vez na vida.","Have you ever been to London?","Você já foi a Londres?"]
+]},
+
+/* ======== PARTES EXTRAS ======== */
+{id:"irreg2",extra:true,ic:"🔂",title:"Mais verbos irregulares",desc:"eat, sleep, pay, forget, win...",
+rule:"Mais verbos irregulares muito usados.\nForma 1 (presente) – Forma 2 (passado) – Forma 3 (particípio).\nDica: agrupe pelo som — sleep/slept, keep/kept, feel/felt.",
+cards:[
+["eat","ate – eaten · comer","","I ate too much.","Eu comi demais."],
+["drink","drank – drunk · beber","","She drank all the water.","Ela bebeu toda a água."],
+["sleep","slept – slept · dormir","Mesmo padrão de keep/kept.","I slept for ten hours.","Eu dormi dez horas."],
+["keep","kept – kept · manter / guardar","","Keep the change.","Fique com o troco."],
+["begin","began – begun · começar","","The class began at 8.","A aula começou às 8."],
+["break","broke – broken · quebrar","","I broke my phone.","Eu quebrei meu celular."],
+["choose","chose – chosen · escolher","","I chose the blue one.","Eu escolhi o azul."],
+["fall","fell – fallen · cair","","He fell off the bike.","Ele caiu da bicicleta."],
+["fly","flew – flown · voar","","We flew to Lisbon.","Nós voamos para Lisboa."],
+["forget","forgot – forgotten · esquecer","","I forgot your name.","Eu esqueci seu nome."],
+["lose","lost – lost · perder","Lose (perder) ≠ loose (frouxo).","I lost my wallet.","Eu perdi minha carteira."],
+["win","won – won · ganhar (jogo, prêmio)","Pronúncia de won: 'uân'.","We won the game.","Nós ganhamos o jogo."],
+["meet","met – met · conhecer / encontrar","Conhecer alguém pela primeira vez.","I met her at work.","Eu a conheci no trabalho."],
+["pay","paid – paid · pagar","","I paid the bill.","Eu paguei a conta."],
+["read","read – read · ler","Escreve igual, mas o passado se pronuncia 'réd'.","I read the whole book.","Eu li o livro inteiro."],
+["send","sent – sent · enviar","","I sent you an email.","Eu te enviei um e-mail."],
+["spend","spent – spent · gastar / passar (tempo)","","I spent the day at home.","Eu passei o dia em casa."],
+["sit","sat – sat · sentar","","She sat next to me.","Ela sentou do meu lado."],
+["stand","stood – stood · ficar em pé","","We stood in line.","Nós ficamos na fila."],
+["swim","swam – swum · nadar","","I swam in the sea.","Eu nadei no mar."],
+["teach","taught – taught · ensinar","Pronúncia: 'tót'.","My dad taught me to drive.","Meu pai me ensinou a dirigir."],
+["understand","understood – understood · entender","","I didn't understand.","Eu não entendi."],
+["wake","woke – woken · acordar","","I woke up late.","Eu acordei tarde."],
+["wear","wore – worn · vestir / usar (roupa)","","She wore a red dress.","Ela usou um vestido vermelho."],
+["sell","sold – sold · vender","","He sold his car.","Ele vendeu o carro."],
+["cost","cost – cost · custar","As 3 formas são iguais.","It cost 50 dollars.","Custou 50 dólares."],
+["cut","cut – cut · cortar","As 3 formas são iguais.","I cut my finger.","Eu cortei meu dedo."],
+["let","let – let · deixar / permitir","As 3 formas são iguais.","Let me help you.","Deixa eu te ajudar."]
+]},
+{id:"phrasal",extra:true,ic:"🧷",title:"Phrasal verbs",desc:"wake up, give up, find out...",
+rule:"Phrasal verb = verbo + partícula (up, out, on, off...).\nO sentido muda totalmente: give = dar · give up = desistir.\nSão MUITO usados na fala do dia a dia.",
+cards:[
+["wake up","Acordar","","I wake up at 7.","Eu acordo às 7."],
+["get up","Levantar (da cama)","Wake up = abrir os olhos · get up = sair da cama.","I get up right away.","Eu levanto logo."],
+["give up","Desistir","","Don't give up!","Não desista!"],
+["find out","Descobrir","","I found out the truth.","Eu descobri a verdade."],
+["figure out","Entender / resolver (algo)","","I can't figure out this bug.","Não consigo resolver esse bug."],
+["look for","Procurar","","I'm looking for my keys.","Estou procurando minhas chaves."],
+["look after","Cuidar de","","Can you look after my dog?","Você pode cuidar do meu cachorro?"],
+["look forward to","Estar ansioso por (algo bom)","Depois vem verbo com -ing.","I look forward to seeing you.","Estou ansioso para te ver."],
+["turn on / turn off","Ligar / desligar","","Turn off the lights.","Desligue as luzes."],
+["put on","Vestir / colocar (roupa)","","Put on your jacket.","Coloque sua jaqueta."],
+["take off","Tirar (roupa) / decolar","","The plane took off.","O avião decolou."],
+["hang out","Sair / passar tempo junto","","Let's hang out this weekend.","Vamos sair nesse fim de semana."],
+["run out of","Ficar sem (acabar)","","We ran out of coffee.","Acabou o café."],
+["come back","Voltar","","Come back soon!","Volte logo!"],
+["show up","Aparecer","","He didn't show up.","Ele não apareceu."],
+["pick up","Buscar / pegar","","I'll pick you up at 8.","Eu te busco às 8."],
+["set up","Configurar / montar","","I set up the new computer.","Eu configurei o computador novo."],
+["work out","Malhar / dar certo","","I work out every day. · It worked out!","Eu malho todo dia. · Deu certo!"],
+["call back","Retornar a ligação","","I'll call you back.","Eu te retorno."],
+["break down","Quebrar (máquina, carro)","","My car broke down.","Meu carro quebrou."],
+["get along (with)","Se dar bem (com)","","I get along with my boss.","Eu me dou bem com meu chefe."],
+["slow down","Ir mais devagar","","Slow down, please.","Mais devagar, por favor."]
+]},
+{id:"maisfrases",extra:true,ic:"🗨️",title:"Mais frases do dia a dia",desc:"never mind, my bad, sounds good...",
+rule:"Expressões curtas que nativos usam o tempo todo. Decore a frase inteira e use em contexto.",
+cards:[
+["What's up?","E aí? / Qual é a boa?","Resposta comum: 'Not much'.","Hey, what's up? — Not much.","E aí? — Nada demais."],
+["Never mind","Deixa pra lá","","Never mind, it's not important.","Deixa pra lá, não é importante."],
+["My bad","Foi mal","Informal.","Oops, my bad!","Ops, foi mal!"],
+["Same here","Eu também / idem","","I'm tired. — Same here.","Estou cansado. — Eu também."],
+["I'm on my way","Estou a caminho","","Don't worry, I'm on my way.","Relaxa, estou a caminho."],
+["Hang on","Espera aí","Também: 'Hold on'.","Hang on a second.","Espera um segundo."],
+["Sounds good","Beleza / parece bom","Para concordar com um plano.","Meet at 7? — Sounds good!","Às 7? — Beleza!"],
+["It's up to you","Você que sabe / você decide","","Pizza or burger? — It's up to you.","Pizza ou hambúrguer? — Você decide."],
+["I can't wait","Mal posso esperar","","I can't wait for the trip!","Mal posso esperar pela viagem!"],
+["Long time no see","Quanto tempo!","Quando reencontra alguém.","Long time no see! How are you?","Quanto tempo! Como você está?"],
+["No worries","Sem problemas / de nada","","Sorry! — No worries.","Desculpa! — Sem problemas."],
+["Let me know","Me avisa","","Let me know if you need help.","Me avisa se precisar de ajuda."],
+["Fair enough","Justo / faz sentido","Aceitando o argumento de alguém.","I can't today. — Fair enough.","Hoje não dá. — Justo."],
+["I'm just looking","Só estou olhando","Em lojas.","Can I help you? — I'm just looking, thanks.","Posso ajudar? — Só estou olhando, obrigado."],
+["Make yourself at home","Fique à vontade","","Come in, make yourself at home.","Entra, fica à vontade."],
+["Have a good one","Tenha um bom dia","Despedida informal.","Thanks, have a good one!","Valeu, tenha um bom dia!"],
+["Nice to meet you","Prazer em te conhecer","Resposta: 'Nice to meet you too'.","I'm Emanoel. Nice to meet you.","Sou o Emanoel. Prazer."],
+["What do you mean?","Como assim?","","What do you mean? I don't get it.","Como assim? Não entendi."],
+["Could you repeat that?","Pode repetir?","Muito útil para quem está aprendendo.","Sorry, could you repeat that?","Desculpa, pode repetir?"],
+["Could you speak slower?","Pode falar mais devagar?","","Could you speak slower, please?","Pode falar mais devagar, por favor?"],
+["How do you say ... in English?","Como se diz ... em inglês?","","How do you say 'saudade' in English?","Como se diz 'saudade' em inglês?"]
+]},
+{id:"cognatos",extra:true,ic:"⚠️",title:"Falsos cognatos",desc:"actually, pretend, push, parents...",
+rule:"Falsos cognatos parecem com o português, mas significam outra coisa.\nCuidado: 'actually' NÃO é 'atualmente', 'pretend' NÃO é 'pretender'.",
+cards:[
+["actually","Na verdade","Atualmente = currently / nowadays.","Actually, I'm from Brazil.","Na verdade, eu sou do Brasil."],
+["pretend","Fingir","Pretender = intend / plan.","He pretended to be sick.","Ele fingiu estar doente."],
+["push","Empurrar","Puxar = pull.","Push the door.","Empurre a porta."],
+["parents","Pais (pai e mãe)","Parentes = relatives.","My parents live in Recife.","Meus pais moram em Recife."],
+["lunch","Almoço","Lanche = snack.","Let's have lunch.","Vamos almoçar."],
+["college","Faculdade","Colégio = school / high school.","I went to college in São Paulo.","Eu fiz faculdade em São Paulo."],
+["library","Biblioteca","Livraria = bookstore.","I study at the library.","Eu estudo na biblioteca."],
+["realize","Perceber","Realizar = accomplish / achieve.","I realized I was wrong.","Eu percebi que estava errado."],
+["eventually","Finalmente / no fim das contas","Eventualmente = occasionally.","Eventually, he got the job.","No fim, ele conseguiu o emprego."],
+["attend","Frequentar / comparecer","Atender = answer / serve.","I attended the meeting.","Eu compareci à reunião."],
+["intend","Pretender","","I intend to travel next year.","Eu pretendo viajar ano que vem."],
+["novel","Romance (livro)","Novela = soap opera.","I'm reading a novel.","Estou lendo um romance."],
+["fabric","Tecido","Fábrica = factory.","This fabric is soft.","Esse tecido é macio."],
+["exquisite","Requintado / refinado","Esquisito = weird / strange.","The food was exquisite.","A comida estava requintada."],
+["sensible","Sensato","Sensível = sensitive.","That's a sensible decision.","É uma decisão sensata."],
+["costume","Fantasia (roupa)","Costume = habit / custom.","I wore a pirate costume.","Eu usei uma fantasia de pirata."],
+["assist","Ajudar","Assistir (TV) = watch.","Can I assist you?","Posso te ajudar?"],
+["support","Apoiar","Suportar (aguentar) = stand / bear.","My family supports me.","Minha família me apoia."]
+]},
+{id:"adjetivos",extra:true,ic:"🎨",title:"Adjetivos do dia a dia",desc:"tired, busy, bored × boring...",
+rule:"Em inglês o adjetivo vem ANTES do substantivo e não tem plural: a big house, big houses.\n-ED = como a pessoa se sente (I'm bored)\n-ING = como a coisa é (the movie is boring)",
+cards:[
+["tired","Cansado","","I'm so tired today.","Estou muito cansado hoje."],
+["hungry","Com fome","Em inglês 'você ESTÁ com fome': I am hungry.","I'm hungry. Let's eat.","Estou com fome. Vamos comer."],
+["thirsty","Com sede","","I'm thirsty.","Estou com sede."],
+["busy","Ocupado","","I'm busy right now.","Estou ocupado agora."],
+["sure","Certo / com certeza","","Are you sure? — Sure!","Tem certeza? — Claro!"],
+["afraid","Com medo","afraid of = com medo de.","I'm afraid of heights.","Tenho medo de altura."],
+["angry","Bravo / com raiva","","Why are you angry?","Por que você está bravo?"],
+["worried","Preocupado","","I'm worried about the test.","Estou preocupado com a prova."],
+["bored × boring","Entediado × chato/entediante","-ed = sentimento · -ing = característica.","The class is boring, so I'm bored.","A aula é chata, então estou entediado."],
+["excited × exciting","Animado × empolgante","","The game is exciting. I'm excited!","O jogo é empolgante. Estou animado!"],
+["interested × interesting","Interessado × interessante","","This book is interesting.","Esse livro é interessante."],
+["cheap × expensive","Barato × caro","","It's cheap here, but expensive there.","Aqui é barato, mas lá é caro."],
+["easy × hard","Fácil × difícil","Também: difficult.","English isn't that hard.","Inglês não é tão difícil."],
+["early × late","Cedo × tarde/atrasado","","I'm never late. I'm always early.","Nunca me atraso. Sempre chego cedo."],
+["full × empty","Cheio × vazio","","The bus was full.","O ônibus estava cheio."],
+["quiet × noisy","Silencioso × barulhento","","The street is noisy.","A rua é barulhenta."]
+]},
+{id:"comparativos",extra:true,ic:"📊",title:"Comparativos e superlativos",desc:"bigger, the biggest, more expensive...",
+rule:"Palavra curta: + er / the + est → big, bigger, the biggest\nPalavra longa: more / the most → expensive, more expensive, the most expensive\nComparar: than → She is taller than me.\nIrregulares: good → better → the best · bad → worse → the worst",
+cards:[
+["big → ?","bigger → the biggest","Palavra curta: -er / -est (dobra o g).","My house is bigger than yours.","Minha casa é maior que a sua."],
+["fast → ?","faster → the fastest","","He is the fastest in the team.","Ele é o mais rápido do time."],
+["easy → ?","easier → the easiest","Termina em -y: troca por -ier / -iest.","This is easier than I thought.","Isso é mais fácil do que eu pensava."],
+["expensive → ?","more expensive → the most expensive","Palavra longa: more / the most.","This is the most expensive car.","Esse é o carro mais caro."],
+["interesting → ?","more interesting → the most interesting","","This book is more interesting.","Esse livro é mais interessante."],
+["good → ?","better → the best","Irregular!","You are the best!","Você é o melhor!"],
+["bad → ?","worse → the worst","Irregular!","Today was the worst day.","Hoje foi o pior dia."],
+["far → ?","farther → the farthest","Também: further.","My job is farther than yours.","Meu trabalho é mais longe que o seu."],
+["than","Do que (comparação)","Não confunda com 'then' (então).","She is older than me.","Ela é mais velha do que eu."],
+["as ... as","Tão ... quanto","","He is as tall as his father.","Ele é tão alto quanto o pai."]
+]},
+{id:"inonat",extra:true,ic:"🗺️",title:"In, On, At",desc:"tempo e lugar",
+rule:"TEMPO: in (mês, ano, períodos) · on (dias e datas) · at (horas)\nin July · on Monday · at 8 pm\nLUGAR: in (dentro) · on (sobre/superfície) · at (ponto/local específico)\nin the box · on the table · at the bus stop",
+cards:[
+["___ Monday","on Monday","Dias da semana → on.","See you on Monday.","Te vejo na segunda."],
+["___ July","in July","Meses → in.","My birthday is in July.","Meu aniversário é em julho."],
+["___ 2020","in 2020","Anos → in.","I moved in 2020.","Eu me mudei em 2020."],
+["___ 8 o'clock","at 8 o'clock","Horas → at.","The meeting is at 8.","A reunião é às 8."],
+["___ the morning","in the morning","Exceção: at night.","I run in the morning.","Eu corro de manhã."],
+["___ night","at night","","I study at night.","Eu estudo à noite."],
+["___ the weekend","on the weekend (EUA) / at the weekend (UK)","","What are you doing on the weekend?","O que você vai fazer no fim de semana?"],
+["___ the box","in the box","Dentro → in.","The keys are in the box.","As chaves estão na caixa."],
+["___ the table","on the table","Em cima → on.","Your phone is on the table.","Seu celular está na mesa."],
+["___ home / ___ work","at home / at work","Locais específicos → at.","I'm at work now.","Estou no trabalho agora."],
+["___ Brazil / ___ São Paulo","in Brazil / in São Paulo","Países e cidades → in.","I live in Brazil.","Eu moro no Brasil."],
+["___ the bus","on the bus","Transporte público → on. Carro → in the car.","I'm on the bus.","Estou no ônibus."]
+]},
+{id:"frequencia",extra:true,ic:"📅",title:"Tempo e frequência",desc:"always, never, ago, yet, still...",
+rule:"Frequência (do mais ao menos): always > usually > often > sometimes > rarely > never\nPosição: antes do verbo principal (I always eat) e depois do be (I am always late).",
+cards:[
+["always","Sempre","","I always drink coffee.","Eu sempre tomo café."],
+["usually","Geralmente","","I usually wake up at 7.","Eu geralmente acordo às 7."],
+["often","Frequentemente","","I often go to the gym.","Eu vou à academia com frequência."],
+["sometimes","Às vezes","","Sometimes I cook.","Às vezes eu cozinho."],
+["rarely","Raramente","","I rarely watch TV.","Eu raramente vejo TV."],
+["never","Nunca","Não use outra negação junto: I never go (não 'I don't never go').","I never smoke.","Eu nunca fumo."],
+["yesterday / tomorrow","Ontem / amanhã","","See you tomorrow!","Até amanhã!"],
+["last week / next week","Semana passada / próxima semana","","I traveled last week.","Eu viajei semana passada."],
+["ago","Atrás (tempo)","Vem depois do período: two days ago.","I met him two years ago.","Eu o conheci dois anos atrás."],
+["just","Acabei de","have + just + particípio.","I've just arrived.","Eu acabei de chegar."],
+["yet","Ainda (negativa) / já (pergunta)","Vai no fim da frase.","I haven't finished yet. · Have you eaten yet?","Ainda não terminei. · Você já comeu?"],
+["still","Ainda (continua)","","I still live with my parents.","Eu ainda moro com meus pais."],
+["once / twice","Uma vez / duas vezes","Três vezes = three times.","I go there once a week.","Eu vou lá uma vez por semana."]
+]},
+{id:"pronomes",extra:true,ic:"👤",title:"Pronomes",desc:"I/me, he/him, she/her...",
+rule:"Sujeito (quem faz): I, you, he, she, it, we, they\nObjeto (quem recebe): me, you, him, her, it, us, them\nI love her · She loves me",
+cards:[
+["I → objeto?","me (me, mim)","","Call me later.","Me liga mais tarde."],
+["he → objeto?","him (o, ele)","","I saw him yesterday.","Eu o vi ontem."],
+["she → objeto?","her (a, ela)","","I like her.","Eu gosto dela."],
+["we → objeto?","us (nos, nós)","","Come with us.","Vem com a gente."],
+["they → objeto?","them (os, eles)","","I know them.","Eu os conheço."],
+["it → objeto?","it","Igual nas duas formas.","I love it!","Eu amo isso!"],
+["Ele me ama.","He loves me.","","He loves me.","Ele me ama."],
+["Eu falei com eles.","I talked to them.","","I talked to them.","Eu falei com eles."],
+["myself / yourself","Eu mesmo / você mesmo","Reflexivos: myself, yourself, himself, herself, itself, ourselves, themselves.","I did it myself.","Eu mesmo fiz."]
+]},
+{id:"viagem",extra:true,ic:"✈️",title:"Viagem e aeroporto",desc:"check-in, boarding pass, hotel...",
+rule:"Frases práticas para aeroporto, hotel e rua. Use 'Excuse me' para chamar a atenção de alguém educadamente.",
+cards:[
+["Excuse me","Com licença / desculpe","Para chamar atenção ou passar.","Excuse me, where is the bathroom?","Com licença, onde fica o banheiro?"],
+["Where is ...?","Onde fica ...?","","Where is the gate?","Onde fica o portão?"],
+["boarding pass","Cartão de embarque","","Can I see your boarding pass?","Posso ver seu cartão de embarque?"],
+["luggage / baggage","Bagagem","Incontável: no plural sem -s.","Where can I get my luggage?","Onde pego minha bagagem?"],
+["carry-on","Bagagem de mão","","I only have a carry-on.","Eu só tenho bagagem de mão."],
+["delayed / canceled","Atrasado / cancelado","","My flight was delayed.","Meu voo atrasou."],
+["I have a reservation","Eu tenho uma reserva","","I have a reservation under Silva.","Tenho uma reserva no nome Silva."],
+["check in / check out","Dar entrada / saída (hotel)","","What time is check-out?","Que horas é o check-out?"],
+["How much is it?","Quanto custa?","","How much is this?","Quanto custa isso?"],
+["How do I get to ...?","Como eu chego em ...?","","How do I get to the station?","Como chego na estação?"],
+["round trip / one way","Ida e volta / só ida","","A round-trip ticket, please.","Uma passagem de ida e volta, por favor."],
+["I'm lost","Estou perdido","","Sorry, I'm lost. Can you help me?","Desculpa, estou perdido. Pode me ajudar?"]
+]},
+{id:"trabalho",extra:true,ic:"💼",title:"Inglês no trabalho",desc:"reuniões, e-mails, tecnologia",
+rule:"Frases comuns em reuniões online, e-mails e times de tecnologia.",
+cards:[
+["Can you hear me?","Você está me ouvindo?","","Can you hear me? — Yes, loud and clear.","Está me ouvindo? — Sim, perfeitamente."],
+["You're on mute","Você está no mudo","","Sorry, you're on mute.","Desculpa, você está no mudo."],
+["Let me share my screen","Deixa eu compartilhar minha tela","","Let me share my screen.","Deixa eu compartilhar minha tela."],
+["I'll get back to you","Eu te dou um retorno","","I'll get back to you tomorrow.","Te dou um retorno amanhã."],
+["I'm on it","Já estou cuidando disso","","The bug? I'm on it.","O bug? Já estou cuidando."],
+["deadline","Prazo","","The deadline is Friday.","O prazo é sexta."],
+["Let's schedule a meeting","Vamos marcar uma reunião","","Let's schedule a meeting for Monday.","Vamos marcar uma reunião para segunda."],
+["Could you clarify?","Você pode esclarecer?","","Could you clarify that point?","Pode esclarecer esse ponto?"],
+["I agree / I disagree","Eu concordo / eu discordo","","I agree with you.","Eu concordo com você."],
+["As soon as possible (ASAP)","O mais rápido possível","","Please send it ASAP.","Por favor, envie o quanto antes."],
+["Please find attached","Segue em anexo","Expressão de e-mail.","Please find attached the report.","Segue em anexo o relatório."],
+["Looking forward to hearing from you","Aguardo seu retorno","Fechamento de e-mail.","Best regards. Looking forward to hearing from you.","Atenciosamente. Aguardo seu retorno."],
+["It's working on my machine","Na minha máquina funciona","Clássico de dev 😄","Weird, it's working on my machine.","Estranho, na minha máquina funciona."],
+["I'm running into an issue","Estou tendo um problema","","I'm running into an issue with the deploy.","Estou tendo um problema com o deploy."]
+]}
+];
+
+/* ===== ESTADO + SALVAMENTO ===== */
+const LS = "englishCards.v2";
+const keyOf = (s,i) => s + ":" + i;
+let known = {}, reverse = false, shuffle = true, updatedAt = 0;
+let queue = [], pos = 0, sessionSecs = [], kCount = 0, uCount = 0, missed = new Set(), uniqueTotal = 0, done = new Set(), sessionActive = false;
+
+const $ = id => document.getElementById(id);
+const show = id => ["home","study","end"].forEach(s => $(s).classList.toggle("hidden", s !== id));
+const findCard = k => { const [sid, i] = k.split(":"); const s = SECTIONS.find(x => x.id === sid); return s && s.cards[+i] ? {sec:s, i:+i, c:s.cards[+i]} : null; };
+
+function snapshot(){
+  return {
+    v: 2, t: updatedAt, known, reverse, shuffle,
+    session: sessionActive ? {
+      secs: sessionSecs, queue: queue.map(q => keyOf(q.sec.id, q.i)), pos,
+      k: kCount, u: uCount, missed: [...missed], done: [...done], total: uniqueTotal
+    } : null
+  };
+}
+
+function applyState(st){
+  if (!st || typeof st !== "object") return;
+  known = (st.known && typeof st.known === "object") ? {...st.known} : {};
+  reverse = !!st.reverse;
+  shuffle = st.shuffle !== false;
+  updatedAt = +st.t || 0;
+  const s = st.session;
+  sessionActive = false;
+  if (s && Array.isArray(s.queue)) {
+    queue = s.queue.map(findCard).filter(Boolean);
+    sessionSecs = Array.isArray(s.secs) ? s.secs.filter(id => SECTIONS.some(x => x.id === id)) : [];
+    pos = Math.min(+s.pos || 0, queue.length);
+    kCount = +s.k || 0; uCount = +s.u || 0;
+    missed = new Set(s.missed || []); done = new Set(s.done || []);
+    uniqueTotal = +s.total || queue.length;
+    sessionActive = queue.length > 0 && pos < queue.length && sessionSecs.length > 0;
+  }
+  $("dirBtn").textContent = reverse ? "PT → EN" : "EN → PT";
+  $("shufBtn").textContent = "🔀 Embaralhar: " + (shuffle ? "sim" : "não");
+  $("shufBtn").classList.toggle("on", shuffle);
+}
+
+function loadLocal(){
+  try {
+    const v2 = localStorage.getItem(LS);
+    if (v2) return JSON.parse(v2);
+    const v1 = localStorage.getItem("englishCards.v1"); // versão antiga: só os dominados
+    if (v1) return {t: 1, known: JSON.parse(v1)};
+  } catch(e){}
+  return null;
+}
+
+/* --- nuvem (conta Claude de cada pessoa) --- */
+let ref = null, writing = false, pendingState = null, flushTimer = null;
+function setSync(mode){
+  const el = $("syncPill");
+  const m = {
+    loading: ["⏳ Conectando...", "Carregando seu progresso salvo"],
+    cloud:   ["☁️ Salvo na sua conta", "Seu progresso fica salvo na sua conta e volta mesmo se atualizar a página ou trocar de aparelho"],
+    saving:  ["☁️ Salvando...", "Salvando seu progresso"],
+    local:   ["💾 Salvo neste navegador", "Sem conexão com a conta: o progresso fica salvo só neste navegador"],
+    error:   ["⚠️ Salvo só neste navegador", "Não foi possível salvar na conta agora; vamos tentar de novo"]
+  }[mode];
+  el.textContent = m[0]; el.title = m[1];
+}
+
+function persist(){
+  updatedAt = Date.now();
+  const st = snapshot();
+  try { localStorage.setItem(LS, JSON.stringify(st)); } catch(e){}
+  if (ref) { pendingState = st; clearTimeout(flushTimer); flushTimer = setTimeout(flush, 700); }
+}
+
+async function flush(){
+  clearTimeout(flushTimer);
+  if (!ref || writing || !pendingState) return;
+  writing = true;
+  const s = pendingState; pendingState = null;
+  setSync("saving");
+  try {
+    await ref.set(JSON.parse(JSON.stringify(s)));
+    setSync("cloud");
+  } catch(e){
+    const code = e && e.code;
+    if (code === "unavailable" || code === "resource_exhausted" || !code) {
+      if (!pendingState) pendingState = s;
+      setSync("error");
+      writing = false;
+      flushTimer = setTimeout(flush, 2000 + Math.random()*1500);
+      return;
+    }
+    ref = null; setSync("local");
+  }
+  writing = false;
+  if (pendingState) flush();
+}
+
+async function connectCloud(){
+  if (!window.claude || typeof window.claude.use !== "function") { setSync("local"); return; }
+  setSync("loading");
+  const giveUp = setTimeout(() => { if (!ref) setSync("local"); }, 10000);
+  try {
+    const db = await window.claude.use("db");
+    const user = await window.claude.use("user");
+    const id = user ? await user.id() : null;
+    if (!db || !id) { clearTimeout(giveUp); setSync("local"); return; }
+    const r = db.doc("data/users/" + id + "/progress");
+    const snap = await r.get();
+    clearTimeout(giveUp);
+    ref = r;
+    const remote = snap.exists ? snap.data() : null;
+    const remoteT = remote ? (+remote.t || 0) : 0;
+    if (remote && remoteT > updatedAt) {
+      // a nuvem tem progresso mais novo: usa ele
+      applyState(JSON.parse(JSON.stringify(remote)));
+      try { localStorage.setItem(LS, JSON.stringify(snapshot())); } catch(e){}
+      if ($("overlay").classList.contains("show")) $("overlay").classList.remove("show");
+      route();
+      setSync("cloud");
+    } else if (updatedAt > remoteT) {
+      pendingState = snapshot(); flush();
+    } else {
+      setSync("cloud");
+    }
+  } catch(e){
+    clearTimeout(giveUp);
+    ref = null; setSync("local");
+  }
+}
+
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flush(); });
+window.addEventListener("pagehide", flush);
+
+/* ===== TELAS ===== */
+function route(){
+  if (sessionActive && pos < queue.length) enterStudy(); else renderHome();
+}
+
+function renderHome(){
+  const g = $("grid"); g.innerHTML = "";
+  let tot = 0, kn = 0;
+  SECTIONS.forEach((s, idx) => {
+    const n = s.cards.length, k = s.cards.filter((_,i) => known[keyOf(s.id,i)]).length;
+    tot += n; kn += k;
+    const el = document.createElement("div");
+    el.className = "sec"; el.style.animationDelay = (idx * 0.03) + "s";
+    el.innerHTML = `<span class="num">${k}/${n}</span><div class="ic">${s.ic}${s.extra ? '<span class="badge">extra</span>' : ''}</div><h3></h3><p></p><div class="bar"><i style="width:${n ? k/n*100 : 0}%"></i></div>`;
+    el.querySelector("h3").textContent = s.title;
+    el.querySelector("p").textContent = s.desc;
+    el.onclick = () => start([s.id]);
+    g.appendChild(el);
+  });
+  const pct = tot ? Math.round(kn/tot*100) : 0;
+  $("totalPct").textContent = pct + "%";
+  $("totalTxt").textContent = `${kn} de ${tot} dominados`;
+  $("ringFg").style.strokeDashoffset = 169.6 * (1 - pct/100);
+  const cont = $("contBtn");
+  if (sessionActive && pos < queue.length) {
+    cont.classList.remove("hidden");
+    cont.textContent = `▶ Continuar: ${sessionTitle()} (${done.size}/${uniqueTotal})`;
+  } else cont.classList.add("hidden");
+  show("home");
+}
+
+function sessionTitle(){
+  return sessionSecs.length > 1 ? "Todas as partes" : (SECTIONS.find(x => x.id === sessionSecs[0]) || {}).title || "";
+}
+
+function start(secIds, onlyMissed){
+  sessionSecs = secIds;
+  queue = [];
+  secIds.forEach(id => {
+    const s = SECTIONS.find(x => x.id === id);
+    s.cards.forEach((c,i) => {
+      if (onlyMissed && !onlyMissed.has(keyOf(id,i))) return;
+      queue.push({sec:s, i, c});
+    });
+  });
+  if (shuffle) for (let i = queue.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [queue[i],queue[j]] = [queue[j],queue[i]]; }
+  pos = 0; kCount = 0; uCount = 0; missed = new Set(); done = new Set(); uniqueTotal = queue.length;
+  sessionActive = true;
+  persist();
+  enterStudy();
+}
+
+function enterStudy(){
+  $("secTitle").textContent = sessionTitle();
+  show("study");
+  renderCard();
+}
+
+function fit(el, t){
+  el.classList.remove("small","xs");
+  if (t.length > 38) el.classList.add("xs"); else if (t.length > 16) el.classList.add("small");
+}
+
+function renderCard(){
+  if (pos >= queue.length) return finish();
+  const {sec, c} = queue[pos];
+  const card = $("card");
+  card.classList.remove("flip","enter"); void card.offsetWidth; card.classList.add("enter");
+  const f = reverse ? c[1] : c[0], b = reverse ? c[0] : c[1];
+  $("frontLab").textContent = reverse ? "Responda em inglês" : sec.title;
+  $("backLab").textContent = "Resposta";
+  $("frontTxt").textContent = f; fit($("frontTxt"), f);
+  setTimeout(() => { $("backTxt").textContent = b; fit($("backTxt"), b); }, 120);
+  $("progBar").style.width = (uniqueTotal ? done.size / uniqueTotal * 100 : 0) + "%";
+  $("countTxt").textContent = `${done.size} de ${uniqueTotal} concluídos`;
+  $("kTxt").textContent = "✓ " + kCount; $("uTxt").textContent = "📖 " + uCount;
+}
+
+function flip(){ $("card").classList.toggle("flip"); }
+
+function markKnow(){
+  if ($("overlay").classList.contains("show") || pos >= queue.length) return;
+  const it = queue[pos], k = keyOf(it.sec.id, it.i);
+  known[k] = true; kCount++; done.add(k);
+  pos++;
+  persist();
+  renderCard();
+}
+
+function openStudy(){
+  if ($("overlay").classList.contains("show") || pos >= queue.length) return;
+  const it = queue[pos], {sec, c} = it, k = keyOf(sec.id, it.i);
+  $("card").classList.add("flip");
+  delete known[k]; uCount++; missed.add(k);
+  $("pSec").textContent = sec.ic + "  " + sec.title;
+  $("pFront").textContent = c[0];
+  $("pBack").textContent = c[1];
+  $("pTip").textContent = c[2]; $("pTipBox").classList.toggle("hidden", !c[2]);
+  $("pExEn").textContent = c[3] ? "“" + c[3] + "”" : ""; $("pExPt").textContent = c[4] || "";
+  $("pExBox").classList.toggle("hidden", !c[3]);
+  $("pRule").textContent = sec.rule;
+  $("overlay").classList.add("show");
+}
+
+function closeStudy(){
+  $("overlay").classList.remove("show");
+  const it = queue[pos];
+  const at = Math.min(queue.length, pos + 4 + Math.floor(Math.random()*3));
+  queue.splice(at, 0, it);
+  pos++;
+  persist();
+  renderCard();
+}
+
+function finish(){
+  sessionActive = false;
+  persist();
+  $("progBar").style.width = "100%";
+  const m = missed.size;
+  $("endEmoji").textContent = m === 0 ? "🏆" : "🎉";
+  $("endTitle").textContent = m === 0 ? "Perfeito, acertou tudo!" : "Rodada concluída!";
+  $("endTxt").textContent = m === 0
+    ? `Você acertou os ${uniqueTotal} cards de primeira.`
+    : `${uniqueTotal} cards revisados. Você precisou estudar ${m} deles — vale repetir só esses.`;
+  $("endAgain").textContent = m ? `Repetir os ${m} que estudei` : "Estudar de novo";
+  const secs = sessionSecs.slice(), miss = new Set(missed);
+  $("endAgain").onclick = () => m ? start(secs, miss) : start(secs);
+  show("end");
+}
+
+/* ===== EVENTOS ===== */
+$("card").onclick = flip;
+$("knowBtn").onclick = markKnow;
+$("studyBtn").onclick = openStudy;
+$("pNext").onclick = closeStudy;
+$("overlay").onclick = e => { if (e.target.id === "overlay") closeStudy(); };
+$("allBtn").onclick = () => start(SECTIONS.map(s => s.id));
+$("contBtn").onclick = enterStudy;
+$("backBtn").onclick = renderHome;
+$("goHome").onclick = renderHome;
+$("endHome").onclick = renderHome;
+$("dirBtn").onclick = () => {
+  reverse = !reverse;
+  $("dirBtn").textContent = reverse ? "PT → EN" : "EN → PT";
+  persist();
+  if (!$("study").classList.contains("hidden")) renderCard();
+};
+$("shufBtn").onclick = () => {
+  shuffle = !shuffle;
+  $("shufBtn").textContent = "🔀 Embaralhar: " + (shuffle ? "sim" : "não");
+  $("shufBtn").classList.toggle("on", shuffle);
+  persist();
+};
+let resetArmed = false;
+$("resetBtn").onclick = () => {
+  if (!resetArmed) { resetArmed = true; $("resetBtn").textContent = "Clique de novo p/ confirmar"; setTimeout(() => { resetArmed = false; $("resetBtn").textContent = "↺ Zerar progresso"; }, 3000); return; }
+  known = {}; sessionActive = false; resetArmed = false;
+  $("resetBtn").textContent = "↺ Zerar progresso";
+  persist(); renderHome();
+};
+document.addEventListener("keydown", e => {
+  if ($("overlay").classList.contains("show")) { if (e.key === "Enter" || e.key === " " || e.key === "Escape") { e.preventDefault(); closeStudy(); } return; }
+  if ($("study").classList.contains("hidden")) return;
+  if (e.key === " ") { e.preventDefault(); flip(); }
+  else if (e.key === "1") openStudy();
+  else if (e.key === "2") markKnow();
+});
+
+/* ===== INÍCIO ===== */
+applyState(loadLocal() || {});
+route();
+connectCloud();
+
+</script>
+</body>
+</html>
